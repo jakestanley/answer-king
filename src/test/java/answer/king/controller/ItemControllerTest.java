@@ -1,6 +1,5 @@
 package answer.king.controller;
 
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -106,8 +105,6 @@ public class ItemControllerTest {
 		json.put("name", item.getName());
 		json.put("price", price);
 		String content = json.toString();
-		
-		// System.out.println(json);
 
 		MvcResult result = 
 				this.mockMvc.perform(
@@ -119,7 +116,8 @@ public class ItemControllerTest {
 						.andExpect(MockMvcResultMatchers.content().contentType(expectedMediaType))
 						.andReturn();
 						
-//		result.getResponse()... TODO assert result content
+		String responseContent = result.getResponse().getContentAsString(); // TODO assert JSON response is valid
+		return;
 
 	}
 }
