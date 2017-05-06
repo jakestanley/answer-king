@@ -65,6 +65,13 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<scope>test</scope>
+			<version>20160810</version>
+		</dependency>
 	</dependencies>
 
 	<build>
