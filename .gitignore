@@ -2,6 +2,8 @@
 /.settings
 /.classpath
 /.project
+bin/
+*.class
 
 # IntelliJ IDEA #
 .idea/

@@ -24,7 +24,13 @@ public class ItemController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public Item create(@RequestBody Item item) {
-		return itemService.save(item);
+	public ResponseEntity<Item> create(@RequestBody Item item) {
+		
+		try {
+			Item saved = itemService.save(item);
+			return new ResponseEntity<Item>(saved, HttpStatus.OK);
+		} catch(Exception e) { // TODO change to type of exception
+			return new ResponseEntity<Item>(HttpStatus.BAD_REQUEST);
+		}
 	}
 }
