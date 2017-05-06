@@ -4,8 +4,6 @@ import static org.mockito.Matchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.math.BigDecimal;
-
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,6 +27,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import answer.king.ItemTest;
 import answer.king.controller.ItemControllerTest.WebConfig;
 import answer.king.model.Item;
 import answer.king.repo.ItemRepository;
@@ -89,29 +88,20 @@ public class ItemControllerTest {
 	@Test
 	public void testCreateGoodItem() throws Exception {
 		
-		final String price = "1.99";
-
-		// create item as per step 4
-		Item item = new Item();
-		item.setName("Burger");
-		item.setPrice(new BigDecimal(price));
-		item.setId(1000001L);
+		Item item = ItemTest.createGoodItem();
 		
 		// mock a valid return value from the service
 		Mockito.when(itemService.save(any()))
 			.thenReturn(item);
 		
-		JSONObject json = new JSONObject();
-		json.put("name", item.getName());
-		json.put("price", price);
-		String content = json.toString();
+		JSONObject json = ItemTest.itemToJson(item);
 
 		MvcResult result = 
 				this.mockMvc.perform(
 						post("/item/")
 						.accept(expectedMediaType)
 						.contentType(expectedMediaType)
-						.content(content))
+						.content(json.toString()))
 						.andExpect(status().isOk())
 						.andExpect(MockMvcResultMatchers.content().contentType(expectedMediaType))
 						.andReturn();
