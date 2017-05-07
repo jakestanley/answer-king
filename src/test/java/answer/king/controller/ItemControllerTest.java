@@ -88,13 +88,17 @@ public class ItemControllerTest {
 	@Test
 	public void testCreateGoodItem() throws Exception {
 		
-		Item item = ItemTest.createGoodItem();
+		Item item = ItemTest.createGoodItem(null);
+
+		// copy to a JSON object before adding the mock id
+		JSONObject json = ItemTest.itemToJson(item);
+
+		// set the mock ID that will be returned
+		item.setId(1000001L);
 		
 		// mock a valid return value from the service
 		Mockito.when(itemService.save(any()))
 			.thenReturn(item);
-		
-		JSONObject json = ItemTest.itemToJson(item);
 
 		MvcResult result = 
 				this.mockMvc.perform(

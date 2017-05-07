@@ -11,7 +11,7 @@ import answer.king.model.Item;
  */
 public class ItemTest {
 
-    public static Item createGoodItem() {
+    public static Item createGoodItem(Long id) {
 
         final String price = "1.99";
 
@@ -19,9 +19,13 @@ public class ItemTest {
         Item item = new Item();
         item.setName("Burger");
         item.setPrice(new BigDecimal(price));
-        item.setId(1000001L);
 
-        return item;
+        // depends on POST or PUT
+        if(id != null) {
+            item.setId(id);
+        }
+
+    	return item;
     }
 
     public static JSONObject itemToJson(Item item) {
