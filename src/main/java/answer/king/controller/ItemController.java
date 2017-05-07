@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import answer.king.ItemValidationException;
 import answer.king.NotFoundException;
 import answer.king.model.Item;
 import answer.king.service.ItemService;
@@ -51,6 +52,9 @@ public class ItemController {
 			return new ResponseEntity<Item>(updated, HttpStatus.OK);
 		} catch(NotFoundException e) {
 			return new ResponseEntity<Item>(HttpStatus.NOT_FOUND);
+		} catch (ItemValidationException e) {
+			e.printStackTrace(); // TODO send error to front end
+			return new ResponseEntity<Item>(HttpStatus.BAD_REQUEST);			
 		}
 	}
 }
