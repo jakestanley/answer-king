@@ -41,7 +41,7 @@ import answer.king.service.ItemService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes=WebConfig.class)
-public class ItemControllerTest {
+public class ItemControllerTest extends ControllerTest {
 	
 	@Configuration
 	@EnableWebMvc
@@ -63,36 +63,14 @@ public class ItemControllerTest {
 		}
 	}
 	
-	private MockMvc mockMvc;
-	private MediaType expectedMediaType;
-	private ResultMatcher expectedMediaTypeMatcher;
-	
 	@Rule
 	public final ExpectedException expectation = ExpectedException.none();
-	
-	@Autowired
-	private WebApplicationContext webAppContext;
 	
 	@Autowired
 	private ItemService itemService;
 
 	@Autowired
 	private ItemController controller;
-	
-	@Before
-	public void setup() {
-		
-		MockitoAnnotations.initMocks(this);
-		
-		this.mockMvc = 
-				MockMvcBuilders.webAppContextSetup(this.webAppContext).build();
-
-		this.expectedMediaType = 
-				MediaType.parseMediaType("application/json;charset=UTF-8");
-		
-		this.expectedMediaTypeMatcher = 
-				MockMvcResultMatchers.content().contentType(expectedMediaType);
-	}
 	
 	@Test
 	public void testCreateGoodItem() throws Exception {
