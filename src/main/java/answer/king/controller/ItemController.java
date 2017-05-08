@@ -1,5 +1,6 @@
 package answer.king.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,16 +40,12 @@ public class ItemController {
 		}
 	}
 	
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<Item> update(	@PathVariable("id") Long id, 
-										@RequestBody Item item) {
-		
-		// override model id with provided path id
-		item.setId(id);
+	@RequestMapping(value = "/{id}/changePrice", method = RequestMethod.PUT)
+	public ResponseEntity<Item> updatePrice(
+			@PathVariable("id") Long id, @RequestBody BigDecimal price) {
 		
 		try {
-			Item updated = itemService.update(item);
-
+			Item updated = itemService.updatePrice(id, price);
 			return new ResponseEntity<Item>(updated, HttpStatus.OK);
 		} catch(NotFoundException e) {
 			return new ResponseEntity<Item>(HttpStatus.NOT_FOUND);

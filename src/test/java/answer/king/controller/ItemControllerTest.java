@@ -5,34 +5,30 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
+
 import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import answer.king.ItemTest;
+import answer.king.ItemValidationException;
+import answer.king.NotFoundException;
 import answer.king.controller.ItemControllerTest.WebConfig;
 import answer.king.model.Item;
 import answer.king.repo.ItemRepository;
@@ -104,32 +100,70 @@ public class ItemControllerTest extends ControllerTest {
 	}
 
 	@Test
-	public void testUpdateGoodItem() throws Exception {
+	public void testUpdatePrice() throws Exception {
 
-		final Long id = 1000002L;
-		Item item = ItemTest.createGoodItem(id);
-		
-		JSONObject json = ItemTest.itemToJson(item);
-		
-		// mock the service update to return the above item
-		Mockito.when(itemService.update(any()))
+		final Long missingId 	= 100666L;
+		final Long existingId 	= 1000002L;
+		final BigDecimal goodPrice 	= BigDecimal.valueOf(2.99);
+		final BigDecimal badPrice 	= BigDecimal.valueOf(-2.49);
+
+		// build the good mock item
+		Item item = ItemTest.createGoodItem(existingId);
+		item.setId(existingId);
+		item.setPrice(goodPrice);
+
+		// mock service behaviours
+		Mockito.when(itemService.updatePrice(existingId, goodPrice))
 			.thenReturn(item);
-		
+
+		Mockito.when(itemService.updatePrice(missingId, goodPrice))
+			.thenThrow(new NotFoundException());
+
+		Mockito.when(itemService.updatePrice(missingId, badPrice))
+			.thenThrow(new NotFoundException());
+
+		Mockito.when(itemService.updatePrice(existingId, badPrice))
+			.thenThrow(new ItemValidationException(null));
+
+		// run tests
+
+		final String url = "/item/%s/changePrice/";
 		MockHttpServletRequestBuilder putRequest;
-		putRequest = put("/item/" + id)
+
+		// good id, good price
+		putRequest = put(String.format(url, existingId))
 				.accept(expectedMediaType)
 				.contentType(expectedMediaType)
-				.content(json.toString());
+				.content(goodPrice.toString());
 
+		// check the price is correct
 		ResultActions actions = this.mockMvc.perform(putRequest);
+		actions.andExpect(status().isOk());
+		// actions.getResponse().getContentAsString(); // TODO check JSON
 
-		MvcResult result = actions
-				.andExpect(status().isOk())
-				.andExpect(this.expectedMediaTypeMatcher)
-				.andReturn();
+		// bad id, good price
+		putRequest = put(String.format(url, missingId))
+				.accept(expectedMediaType)
+				.contentType(expectedMediaType)
+				.content(goodPrice.toString());
 
-		MockHttpServletResponse response = result.getResponse();
-		String content = response.getContentAsString();
+		this.mockMvc.perform(putRequest).andExpect(status().isNotFound());
+
+		// good id, bad price
+		putRequest = put(String.format(url, existingId))
+				.accept(expectedMediaType)
+				.contentType(expectedMediaType)
+				.content(badPrice.toString());
+		
+		this.mockMvc.perform(putRequest).andExpect(status().isBadRequest());
+
+		// bad id, bad price
+		putRequest = put(String.format(url, missingId))
+				.accept(expectedMediaType)
+				.contentType(expectedMediaType)
+				.content(badPrice.toString());
+
+		this.mockMvc.perform(putRequest).andExpect(status().isNotFound());
 
 		return;
 	}

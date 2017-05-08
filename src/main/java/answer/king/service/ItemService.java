@@ -32,15 +32,16 @@ public class ItemService {
 		return itemRepository.save(item);
 	}
 
-	public Item update(Item item) throws NotFoundException, ItemValidationException {
-		
-		validateItem(item);
-		
-		Long id = item.getId();
+	public Item updatePrice(long id, BigDecimal price) throws NotFoundException, ItemValidationException {
 		
 		if(!itemRepository.exists(id)) {
 			throw new NotFoundException();
 		}
+		
+		Item item = itemRepository.getOne(id);
+		item.setPrice(price);
+		
+		validateItem(item);
 		
 		return itemRepository.save(item);
 	}
