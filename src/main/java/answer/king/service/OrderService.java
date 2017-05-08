@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import answer.king.InsufficientFundsException;
 import answer.king.model.Item;
 import answer.king.model.Order;
 import answer.king.model.Receipt;
@@ -41,8 +42,14 @@ public class OrderService {
 		orderRepository.save(order);
 	}
 
-	public Receipt pay(Long id, BigDecimal payment) {
+	public Receipt pay(Long id, BigDecimal payment) throws InsufficientFundsException {
 		Order order = orderRepository.findOne(id);
+		
+		BigDecimal required = order.getTotal();
+		
+		if(payment.compareTo(required) < 0) {
+			throw new InsufficientFundsException(required, payment);
+		}
 
 		Receipt receipt = new Receipt();
 		receipt.setPayment(payment);

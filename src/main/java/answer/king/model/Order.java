@@ -1,5 +1,6 @@
 package answer.king.model;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -9,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "T_ORDER")
@@ -45,5 +48,15 @@ public class Order {
 
 	public void setItems(List<Item> items) {
 		this.items = items;
+	}
+
+	@JsonIgnore
+	public BigDecimal getTotal() {
+		BigDecimal total = this.getItems()
+			.stream()
+			.map(Item::getPrice)
+			.reduce(BigDecimal.ZERO, BigDecimal::add);
+
+		return total;
 	}
 }

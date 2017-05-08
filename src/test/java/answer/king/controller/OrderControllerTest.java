@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import answer.king.InsufficientFundsException;
 import answer.king.ItemTest;
 import answer.king.controller.OrderControllerTest.WebConfig;
 import answer.king.model.Item;
@@ -199,6 +200,41 @@ public class OrderControllerTest extends ControllerTest {
 		}
 		
 		return;
+	}
+
+	@Test
+	public void testBadPayment() throws Exception {
+
+		long orderId 	= 1000003L;
+		long itemId 	= 1000005L;
+		BigDecimal price 	= BigDecimal.valueOf(2.99);
+
+		// mock item
+		Item item = ItemTest.createGoodItem(itemId);
+		item.setPrice(price);
+
+		// mock an existing order with items
+		Order order = new Order();
+		order.setId(orderId);
+		item.setOrder(order);
+		order.setItems(Arrays.asList(item));
+		BigDecimal payment 	= BigDecimal.valueOf(1.00);
+		
+		// mock service behaviour
+		Mockito.when(orderService.pay(any(), any()))
+			.thenThrow(new InsufficientFundsException(price, payment));
+
+		// do request
+		MockHttpServletRequestBuilder putRequest;
+		putRequest = put("/order/" + orderId + "/pay")
+				.accept(expectedMediaType)
+				.contentType(expectedMediaType)
+				.content(payment.toString());
+
+		ResultActions actions = this.mockMvc.perform(putRequest);
+
+		actions	.andExpect(status().isNotAcceptable())
+				.andReturn();
 	}
 
 }

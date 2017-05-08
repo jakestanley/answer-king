@@ -1,12 +1,17 @@
 package answer.king.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +23,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import answer.king.InsufficientFundsException;
 import answer.king.ItemTest;
 import answer.king.OrderTest;
 import answer.king.model.Item;
@@ -52,6 +58,9 @@ public class OrderServiceTest {
         }
 
     }
+
+    @Rule
+    public final ExpectedException expectation = ExpectedException.none();
 
     @Autowired
     private OrderRepository orderRepository;
@@ -101,7 +110,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void testPay() {
+    public void testGoodPayment() throws InsufficientFundsException {
 
         long orderId    = 1000007L;
         long itemId     = 1000007L;
@@ -135,6 +144,31 @@ public class OrderServiceTest {
         
         // check that the order has been set as paid
         assertTrue(order.getPaid());
+    }
+    
+    @Test
+    public void testBadPayment() throws InsufficientFundsException {
+    	
+        long orderId    = 1000008L;
+        long itemId     = 1000008L;
+        BigDecimal payment  = BigDecimal.valueOf(1.00);
+        BigDecimal price    = BigDecimal.valueOf(2.99);
+
+        // mock item and order
+        Item item = ItemTest.createGoodItem(itemId);
+        item.setPrice(price);
+
+        Order order = new Order();
+        order.setId(orderId);
+        item.setOrder(order);
+        order.setItems(Arrays.asList(item));
+
+        // mock service/repository behaviours
+        Mockito.when(orderRepository.findOne(orderId)).thenReturn(order);
+        
+        // do test
+        expectation.expect(InsufficientFundsException.class);
+        service.pay(orderId, payment);
     }
 
 }
