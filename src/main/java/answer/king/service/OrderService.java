@@ -47,6 +47,7 @@ public class OrderService {
 		Receipt receipt = new Receipt();
 		receipt.setPayment(payment);
 		receipt.setOrder(order);
+		order.setPaid(true);
 		return receipt;
 	}
 }

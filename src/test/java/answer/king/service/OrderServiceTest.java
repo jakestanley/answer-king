@@ -1,7 +1,6 @@
 package answer.king.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -118,6 +117,9 @@ public class OrderServiceTest {
         order.setId(orderId);
         item.setOrder(order);
         order.setItems(Arrays.asList(item));
+        
+        // check order hasn't been paid yet (shouldn't have)
+        assertFalse(order.getPaid());
 
         // mock service/repository behaviours
         Mockito.when(orderRepository.findOne(orderId)).thenReturn(order);
@@ -130,6 +132,9 @@ public class OrderServiceTest {
         assertEquals((long) receipt.getOrder().getId(), orderId);
         assertEquals(receipt.getPayment(), payment);
         assertEquals(receipt.getChange(), change);
+        
+        // check that the order has been set as paid
+        assertTrue(order.getPaid());
     }
 
 }
