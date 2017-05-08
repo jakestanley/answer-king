@@ -116,10 +116,10 @@ public class ItemControllerTest extends ControllerTest {
 			.thenReturn(item);
 		
 		MockHttpServletRequestBuilder putRequest;
-			putRequest = put("/item/" + id)
-					.accept(expectedMediaType)
-					.contentType(expectedMediaType)
-					.content(json.toString());
+		putRequest = put("/item/" + id)
+				.accept(expectedMediaType)
+				.contentType(expectedMediaType)
+				.content(json.toString());
 
 		ResultActions actions = this.mockMvc.perform(putRequest);
 
