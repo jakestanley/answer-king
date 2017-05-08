@@ -13,6 +13,7 @@ import answer.king.model.Order;
 import answer.king.model.Receipt;
 import answer.king.repo.ItemRepository;
 import answer.king.repo.OrderRepository;
+import answer.king.repo.ReceiptRepository;
 
 @Service
 @Transactional
@@ -23,6 +24,9 @@ public class OrderService {
 
 	@Autowired
 	private ItemRepository itemRepository;
+	
+	@Autowired
+	private ReceiptRepository receiptRepository;
 
 	public List<Order> getAll() {
 		return orderRepository.findAll();
@@ -50,11 +54,15 @@ public class OrderService {
 		if(payment.compareTo(required) < 0) {
 			throw new InsufficientFundsException(required, payment);
 		}
+		
+		order.setPaid(true);
 
 		Receipt receipt = new Receipt();
 		receipt.setPayment(payment);
 		receipt.setOrder(order);
-		order.setPaid(true);
+		
+		receiptRepository.save(receipt);
+		
 		return receipt;
 	}
 }

@@ -89,7 +89,7 @@ i.e. --> curl -XPUT http://localhost:8888/order/1/pay -H "Content-Type: applicat
 
 ~~(15) It is possible that somebody could try and pay for an Order with insufficient funds, amend the code base so that this cannot happen, supporting unit tests will need to be written as part of the task~~
 
-(16) Amend the codebase so that Receipts are persisted as part of a successful payment, that can be later retrieved, supporting unit tests will need to be written as part of the task
+~~(16) Amend the codebase so that Receipts are persisted as part of a successful payment, that can be later retrieved, supporting unit tests will need to be written as part of the task~~
 
 (17) Amend the codebase so that it is possible to change the price of an item, supporting unit tests will need to be written as part of the task
 

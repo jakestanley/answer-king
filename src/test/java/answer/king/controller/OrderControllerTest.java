@@ -38,6 +38,7 @@ import answer.king.model.Order;
 import answer.king.model.Receipt;
 import answer.king.repo.ItemRepository;
 import answer.king.repo.OrderRepository;
+import answer.king.repo.ReceiptRepository;
 import answer.king.service.OrderService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -53,6 +54,11 @@ public class OrderControllerTest extends ControllerTest {
 		public ItemRepository itemRepository() {
 			return Mockito.mock(ItemRepository.class);
 		}
+
+		@Bean
+        public ReceiptRepository receiptRepository() {
+			return Mockito.mock(ReceiptRepository.class);
+        }
 		
 		@Bean
 		public OrderRepository orderRepository() {
