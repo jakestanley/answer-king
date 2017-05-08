@@ -47,12 +47,6 @@ public class ItemServiceTest {
         }
     }
     
-	@Before
-	public void setup() {
-		
-		MockitoAnnotations.initMocks(this);	
-	}
-    
 	@Rule
 	public final ExpectedException expectation = ExpectedException.none();
 	
