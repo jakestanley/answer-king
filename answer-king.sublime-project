@@ -1,0 +1,19 @@
+{
+	"folders":
+	[
+		{
+            "folder_exclude_patterns": [ "bin", "src", ".settings" ],
+            "file_exclude_patterns": [ ".project" ],
+			"path": "."
+		},
+        {
+            "name": "main/java",
+            "path": "src/main/java/answer/king"
+        },
+        {
+            "name": "test/java",
+            "path": "src/test/java/answer/king"
+        }
+
+	]
+}
