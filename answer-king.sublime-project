@@ -11,6 +11,10 @@
             "path": "src/main/java/answer/king"
         },
         {
+            "name": "main/webapp",
+            "path": "src/main/webapp"
+        },
+        {
             "name": "test/java",
             "path": "src/test/java/answer/king"
         }
